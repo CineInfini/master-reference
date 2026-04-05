@@ -5,8 +5,7 @@
 
 ## Generated image
 
-![Figure 2a – Sensitivity](../figures/fig2a_sensitivity.png)
-
+![Figure 2a – Sensitivity](../Figures/fig2a_sensitivity.jpg)
 ## Prompt (English, minimal)
 
 Line chart.  
