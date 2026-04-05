@@ -3,9 +3,9 @@
 **Tool:** Gemini (Imagen)  
 **Date:** 2026-04-04  
 
-## Generated image 
+## Generated image
 
-![Figure 1 – Pipeline](../figures/fig1_pipeline.png)
+![Figure 1 – Pipeline](../Figures/fig1_pipeline.png)
 
 ## Prompt (English, minimal)
 
