@@ -1,0 +1,138 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Sensitivity Analysis for CineInfini Parametric Cost Model\n",
+    "\n",
+    "This notebook demonstrates how to vary parameters and observe the impact on total production cost (mode IA).\n",
+    "\n",
+    "**Useful links:**\n",
+    "- [Source code](../src/cineinfini_cost_model_param.py)\n",
+    "- [Constants and parameters](../constants/Constants.md)\n",
+    "- [Bibliography](../bibliography/Bibliography.md)\n",
+    "\n",
+    "First, ensure that `cineinfini_cost_model_param.py` is accessible (adjust the path if needed)."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import sys\n",
+    "sys.path.append('..')  # if notebook is in a subfolder; adjust as needed\n",
+    "from src.cineinfini_cost_model_param import compute_cost_ia, DEFAULT_PARAMS"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 1. Baseline costs (low, medium, high scenarios)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "costs = compute_cost_ia(scenario='all')\n",
+    "print(\"Baseline costs (90 min film):\")\n",
+    "for k, v in costs.items():\n",
+    "    print(f\"  {k.capitalize():6s} : {v:.2f} {DEFAULT_PARAMS['currency']}\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 2. Vary film duration"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "for duration in [3600, 5400, 7200, 10800]:  # 60, 90, 120, 180 minutes\n",
+    "    params = {\"film_duration_sec\": duration}\n",
+    "    cost = compute_cost_ia(scenario='medium', user_params=params)\n",
+    "    print(f\"Duration {duration//60} min: {cost:.2f} {DEFAULT_PARAMS['currency']}\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 3. Vary rejection rate (requires overriding constants)\n",
+    "\n",
+    "We need to temporarily modify the `INTERVALS` dictionary to change the rejection rate."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from src.cineinfini_cost_model_param import INTERVALS, compute_cost_ia\n",
+    "\n",
+    "def cost_with_rejection_rate(rej):\n",
+    "    custom_intervals = INTERVALS.copy()\n",
+    "    custom_intervals[\"REJECTION_RATE\"] = (rej, rej, rej)\n",
+    "    import src.cineinfini_cost_model_param as cm\n",
+    "    original = cm.INTERVALS\n",
+    "    cm.INTERVALS = custom_intervals\n",
+    "    cost = compute_cost_ia(scenario='medium')\n",
+    "    cm.INTERVALS = original\n",
+    "    return cost\n",
+    "\n",
+    "for rej in [0.2, 0.5, 1.0, 2.0]:\n",
+    "    c = cost_with_rejection_rate(rej)\n",
+    "    print(f\"Rejection rate {rej}: {c:.2f} {DEFAULT_PARAMS['currency']}\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 4. Visualisation (requires matplotlib)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import matplotlib.pyplot as plt\n",
+    "\n",
+    "scenarios = ['low', 'medium', 'high']\n",
+    "values = [compute_cost_ia(s) for s in scenarios]\n",
+    "\n",
+    "plt.bar(scenarios, values, color=['green', 'orange', 'red'])\n",
+    "plt.ylabel(f'Production cost ({DEFAULT_PARAMS[\"currency\"]})')\n",
+    "plt.title('CineInfini cost estimates (90 min AI film)')\n",
+    "plt.show()"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "name": "python",
+   "version": "3.10.0"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}
