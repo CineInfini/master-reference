@@ -5,7 +5,7 @@
 
 ## Generated image
 
-![Figure 2b – Cost comparison](../figures/fig2b_comparison.png)
+![Figure 2b – Cost comparison](../Figures/fig2b_comparison.png)
 
 ## Prompt (English, minimal)
 
