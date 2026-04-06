@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
@@ -6,15 +5,10 @@
 CineInfini Parametric Cost Model
 Author: Salah-Eddine Benbrahim
 License: MIT
-Repository: https://github.com/CineInfini/master-reference
+Repository: https://github.com/CineInfini/master-reference/tree/main/cineinfini_cost_model_param
 
-This module provides a parametric cost model for AI‑generated films (mode IA).
-It includes constants (low/medium/high intervals), user‑adjustable parameters,
-and a main function compute_cost_ia() that returns production cost (excluding marketing).
-
-All constant values and their intervals are documented in the file:
-    constants/Constants.md  (or constants.csv)
-See bibliography/Bibliography.md for full references.
+This module provides a parametric cost model for AI‑generated films (mode AI).
+All constants and variables are aligned with the paper version 6.0.
 """
 
 from typing import Dict, Union
@@ -29,36 +23,37 @@ CONFIG = {
 
 # ----------------------------------------------------------------------
 # 2. Intervals for all constants (low, medium, high)
-#    These values are taken from constants/Constants.md.
-#    References are given as keys pointing to bibliography/Bibliography.md.
+#    Values updated for version 6.0:
+#    - VIDEO_AI_COST_PER_SEC: medium = 0.40 USD/s (cinema quality)
+#    - REGENERATION_RATE: replaces REJECTION_RATE, range 20-30, default 25
 # ----------------------------------------------------------------------
 INTERVALS = {
-    # Technical constants (from [Vogel2020], [ElevenLabs2026], [MuseSteamer2025], etc.)
+    # Technical constants
     "SHOT_DURATION_SEC": (4.0, 5.0, 8.0),           # [Vogel2020]
     "DIALOGUE_RATIO": (0.3, 0.4, 0.5),              # [Vogel2020]
     "SPEECH_RATE_CHAR_PER_SEC": (8, 10, 12),        # [ElevenLabs2026]
     "MUSIC_RATIO": (0.6, 0.7, 0.8),                 # [MuseSteamer2025]
 
-    # AI costs
-    "VIDEO_AI_COST_PER_SEC": (0.10, 0.30, 0.50),    # USD/s [Brooks2025]
+    # AI costs (updated: median video cost = 0.40 USD/s)
+    "VIDEO_AI_COST_PER_SEC": (0.30, 0.40, 0.50),    # USD/s [ModelsLab2026]
     "TTS_COST_PER_CHAR": (0.0001, 0.0003, 0.0005),  # USD/char [ElevenLabs2026]
-    "MUSIC_AI_COST_PER_SEC": (0.01, 0.03, 0.05),    # USD/s [MuseSteamer2025]
-    "VFX_AI_COST_PER_SEC": (0.01, 0.05, 0.10),      # USD/s [MuseSteamer2025]
-    "EDITING_AI_COST_PER_SEC": (0.001, 0.005, 0.01),# USD/s [Runway2025]
+    "MUSIC_AI_COST_PER_SEC": (0.01, 0.03, 0.05),    # USD/s [CometAPI2025]
+    "VFX_AI_COST_PER_SEC": (0.01, 0.05, 0.10),      # USD/s [TechBang2025]
+    "EDITING_AI_COST_PER_SEC": (0.001, 0.005, 0.01),# USD/s [Runway2024]
     "GPU_SEC_PER_VIDEO_SEC": (60, 120, 600),        # GPU‑s/s [MovieGen2024]
     "GPU_PRICE_PER_HOUR": (1.5, 3.0, 5.0),          # USD/h [MovieGen2024]
-    "TRADITIONAL_VFX_COST_PER_SEC": (10000, 50000, 100000),  # USD/s [MuseSteamer2025]
+    "TRADITIONAL_VFX_COST_PER_SEC": (10000, 50000, 100000),  # USD/s
 
     # Human costs (traditional)
-    "ALIST_ACTOR_DAY": (500_000, 1_000_000, 2_000_000),      # USD/day [Vogel2020][MPA2025]
+    "ALIST_ACTOR_DAY": (500_000, 1_000_000, 2_000_000),      # USD/day [Vogel2020]
     "EXTRA_NON_UNION_DAY": (300, 500, 1000),                 # USD/day [SAGindie2023]
     "EXTRA_UNION_DAY": (2500, 2500, 2500),                   # USD/day [SAGindie2023]
     "SCREENWRITER_FLAT": (100_000, 250_000, 500_000),        # USD/script [WGA]
     "DIRECTOR_FLAT": (500_000, 2_000_000, 10_000_000),       # USD/film [DGA]
     "CREW_DAY": (500, 800, 1500),                            # USD/day [Vogel2020]
 
-    # Performance parameter
-    "REJECTION_RATE": (0.2, 0.5, 2.0),                # dimensionless [Brooks2025] (estimated)
+    # Performance parameter: regeneration attempts per shot (replaces rejection rate)
+    "REGENERATION_RATE": (20.0, 25.0, 30.0),         # dimensionless [AdMonsters2025]
 }
 
 # ----------------------------------------------------------------------
@@ -66,7 +61,7 @@ INTERVALS = {
 # ----------------------------------------------------------------------
 DEFAULT_PARAMS = {
     "film_duration_sec": 5400,      # 90 minutes
-    "vfx_duration_sec": 1200,       # 20 minutes (typical for a feature)
+    "vfx_duration_sec": 1200,       # 20 minutes
     "currency": "USD",              # USD, EUR, GBP
 }
 
@@ -81,7 +76,7 @@ def _get_constants_for_scenario(scenario: str) -> Dict:
     return {key: values[idx] for key, values in INTERVALS.items()}
 
 # ----------------------------------------------------------------------
-# 5. Main cost function
+# 5. Main cost function (mode AI)
 # ----------------------------------------------------------------------
 def compute_cost_ia(scenario: str = CONFIG["default_scenario"],
                     user_params: Dict = CONFIG["default_params"]) -> Union[float, Dict]:
@@ -122,12 +117,13 @@ def compute_cost_ia(scenario: str = CONFIG["default_scenario"],
 
     film_duration = params["film_duration_sec"]
     vfx_duration = params["vfx_duration_sec"]
-    reject_rate = const["REJECTION_RATE"]
+    # Use regeneration rate (25 default, range 20-30)
+    regen_rate = const["REGENERATION_RATE"]
     shot_duration = const["SHOT_DURATION_SEC"]
     n_shots = film_duration / shot_duration
 
-    # Video generation cost
-    video_cost = n_shots * shot_duration * const["VIDEO_AI_COST_PER_SEC"] * (1 + reject_rate)
+    # Video generation cost: includes regeneration multiplier (1 + regen_rate)
+    video_cost = n_shots * shot_duration * const["VIDEO_AI_COST_PER_SEC"] * (1 + regen_rate)
 
     # Text‑to‑speech (dialogues)
     dialogue_sec = film_duration * const["DIALOGUE_RATIO"]
@@ -150,18 +146,21 @@ def compute_cost_ia(scenario: str = CONFIG["default_scenario"],
 # 6. Example usage (when script is run directly)
 # ----------------------------------------------------------------------
 if __name__ == "__main__":
-    print("CineInfini Parametric Cost Model")
-    print("================================\n")
+    print("CineInfini Parametric Cost Model (Version 6.0)")
+    print("=============================================\n")
     print("Production cost (excluding marketing) for a 90‑minute AI film:\n")
 
     costs = compute_cost_ia(scenario="all")
     for k, v in costs.items():
         print(f"  {k.capitalize():6s} : {v:.2f} {DEFAULT_PARAMS['currency']}")
 
-    print("\nSensitivity analysis (medium scenario, varying rejection rate – illustrative):")
-    # Note: to truly vary rejection rate, one would need to create a custom constants dictionary.
-    # This is a placeholder; see the Jupyter notebook for a full sensitivity analysis.
-    for rej in [0.2, 0.5, 1.0, 2.0]:
-        # For demonstration, we use the same medium cost; in practice, you would override the constant.
-        cost = compute_cost_ia("medium")
-        print(f"  Rejection rate {rej} -> {cost:.2f} {DEFAULT_PARAMS['currency']} (placeholder)")
+    print("\nSensitivity analysis (varying regeneration rate, medium scenario):")
+    # Demonstrate effect of regeneration rate (20, 25, 30)
+    for regen in [20, 25, 30]:
+        # Override the regeneration rate by creating a custom constants dictionary
+        # (in a real scenario, you would modify INTERVALS temporarily)
+        # Here we just simulate by scaling the medium cost linearly:
+        base_cost = costs["medium"]
+        factor = (1 + regen) / (1 + 25)  # 25 is default medium
+        sim_cost = base_cost * factor
+        print(f"  Regeneration rate {regen} -> {sim_cost:.2f} USD (simulated linear scaling)")
