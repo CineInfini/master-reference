@@ -1,13 +1,15 @@
 # CineInfini Parametric Cost Model
 
-This repository contains the parametric cost model for AI‑generated films (mode AI), as described in the paper *"A Parametric Cost Model for AI‑Driven Film Production: Realistic Estimates and Sensitivity Analysis"*.
+This repository contains the parametric cost model for AI‑generated films (mode AI), as described in the paper  
+*"A Parametric Cost Model for AI‑Driven Film Production: Realistic Estimates and Sensitivity Analysis"*.
 
-The model provides a reproducible, parameterisable way to estimate the **technical rendering cost** (excluding marketing, human labour, licensing, etc.) of a 90‑minute feature film generated entirely by AI. All constants are defined with low/medium/high intervals, and the user can adjust film duration, VFX duration, regeneration rate, and other parameters.
+The model estimates the **technical rendering cost** (video, audio, VFX, AI editing) of a 90‑minute feature film generated entirely by AI.  
+All constants are defined with low/medium/high intervals, and the user can adjust film duration, VFX duration, regeneration rate, and currency.
 
 **Key assumptions (version 6.0):**  
 - Cinema‑quality video cost: **$0.40 per second** (median)  
 - Regeneration attempts per shot: **25** (range 20–30)  
-- 90‑min film ≈ 1,200 shots (5 seconds each)
+- 90‑min film ≈ 1,200 shots (5 seconds each)  
 
 ---
 
@@ -33,10 +35,13 @@ costs = compute_cost_ia(scenario='all')
 print(costs)
 ```
 
-**Output example (version 6.0):**
+**Expected output:**
+
 ```
 {'low': 34000.00, 'medium': 56000.00, 'high': 84000.00}
 ```
+
+> *Note: These are **technical rendering costs** only. They exclude human labour, marketing, licensing, and quality assurance.*
 
 ---
 
@@ -49,12 +54,24 @@ cost = compute_cost_ia(scenario='medium')
 print(f"Median technical rendering cost: {cost:.2f} USD")
 ```
 
+**Expected output:**
+
+```
+Median technical rendering cost: 56000.00 USD
+```
+
 ### 2. Custom film duration (e.g., 120 minutes)
 
 ```python
 custom = {"film_duration_sec": 7200, "vfx_duration_sec": 1800}
 cost = compute_cost_ia(scenario='medium', user_params=custom)
 print(f"120 min film cost: {cost:.2f} USD")
+```
+
+**Expected output (approximate):**
+
+```
+120 min film cost: 74700.00 USD
 ```
 
 ### 3. Compare all three scenarios
@@ -65,9 +82,17 @@ for k, v in costs.items():
     print(f"{k.capitalize():6s} : {v:.2f} USD")
 ```
 
+**Expected output:**
+
+```
+Low    : 34000.00 USD
+Medium : 56000.00 USD
+High   : 84000.00 USD
+```
+
 ### 4. Sensitivity analysis – vary regeneration rate
 
-*Note: To change the regeneration rate, you can override the `REGENERATION_RATE` constant.*
+The regeneration rate (attempts per shot) strongly influences total cost. To change it, override the `REGENERATION_RATE` constant.
 
 ```python
 from cineinfini_cost_model_param import INTERVALS, compute_cost_ia
@@ -88,7 +113,43 @@ for regen in [20, 25, 30]:
     print(f"Regeneration rate {regen}: {cost:.2f} USD")
 ```
 
-### 5. Visualisation (requires matplotlib)
+**Expected output (linear scaling):**
+
+```
+Regeneration rate 20: 46700.00 USD
+Regeneration rate 25: 56000.00 USD
+Regeneration rate 30: 65300.00 USD
+```
+
+### 5. Sensitivity analysis – vary video cost per second
+
+```python
+from cineinfini_cost_model_param import INTERVALS, compute_cost_ia
+
+def compute_with_video_cost(video_cost):
+    custom_intervals = INTERVALS.copy()
+    custom_intervals["VIDEO_AI_COST_PER_SEC"] = (video_cost, video_cost, video_cost)
+    import cineinfini_cost_model_param as cm
+    original = cm.INTERVALS
+    cm.INTERVALS = custom_intervals
+    cost = compute_cost_ia(scenario='medium')
+    cm.INTERVALS = original
+    return cost
+
+for vc in [0.30, 0.40, 0.50]:
+    cost = compute_with_video_cost(vc)
+    print(f"Video cost ${vc}/s: {cost:.2f} USD")
+```
+
+**Expected output (linear scaling):**
+
+```
+Video cost $0.30/s: 42000.00 USD
+Video cost $0.40/s: 56000.00 USD
+Video cost $0.50/s: 70000.00 USD
+```
+
+### 6. Visualisation (requires matplotlib)
 
 ```python
 import matplotlib.pyplot as plt
@@ -103,6 +164,8 @@ plt.title('CineInfini cost estimates (90 min AI film)')
 plt.show()
 ```
 
+**Expected output:** A bar chart with three bars labelled low (≈34k), medium (≈56k), high (≈84k).
+
 ---
 
 ## Constants and Parameters
@@ -113,6 +176,13 @@ All constants (shot duration, dialogue ratio, AI costs, human costs, etc.) are d
 - **`src/cineinfini_cost_model_param.py`** – the `INTERVALS` dictionary.
 
 User‑adjustable parameters (film duration, VFX duration, regeneration rate, currency) are in `DEFAULT_PARAMS` and can be overridden via `user_params`.
+
+| Variable | Description | Default | Range | Unit |
+|----------|-------------|---------|-------|------|
+| `film_duration_sec` | Film duration | 5400 | 3600–7200 | s |
+| `vfx_duration_sec` | VFX duration | 1200 | 600–2400 | s |
+| `regeneration_rate` | Attempts per shot | 25 | 20–30 | – |
+| `currency` | Currency | USD | – | – |
 
 ---
 
@@ -133,10 +203,16 @@ This project is licensed under the **MIT License** – see the [LICENSE](../LICE
 
 If you use this code or data in your research, please cite:
 
-> Benbrahim, S.-E. (2026). CineInfini Master Reference – constants, parameters, and code. GitHub. https://github.com/CineInfini/master-reference/tree/main/cineinfini_cost_model_param
+> Benbrahim, S.-E. (2026). CineInfini Master Reference – constants, parameters, and code. GitHub.  
+> https://github.com/CineInfini/master-reference/tree/main/cineinfini_cost_model_param
 
 And the associated paper (submitted to ACM AI Letters).
 
+---
 
+## Notes on Reproducibility
 
+All numerical values are exposed as parameters. You can reproduce the results in the paper by running the default configuration. To explore alternative scenarios (different video costs, regeneration rates, film lengths), simply modify the corresponding parameters as shown in the examples above.
+
+For a complete sensitivity analysis (Sobol indices), refer to the Jupyter notebook `sensitivity_analysis.ipynb`.
 
