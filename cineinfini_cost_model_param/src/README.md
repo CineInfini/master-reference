@@ -1,11 +1,13 @@
-Voici le contenu complet et **proprement formaté** du fichier `README.md` (pour le dossier `src/` ou la racine). Vous pouvez le copier-coller directement dans l’éditeur GitHub.
-
-```markdown
 # CineInfini Parametric Cost Model
 
-This repository contains the parametric cost model for AI‑generated films (mode IA), as described in the paper *"A Parametric Cost Model for Film Production: Unifying Human, Hybrid, and Generative AI Modes"*.
+This repository contains the parametric cost model for AI‑generated films (mode AI), as described in the paper *"A Parametric Cost Model for AI‑Driven Film Production: Realistic Estimates and Sensitivity Analysis"*.
 
-The model provides a reproducible, parameterisable way to estimate the production cost (excluding marketing) of a 90‑minute feature film generated entirely by AI. All constants are defined with low/medium/high intervals, and the user can adjust film duration, VFX duration, and other parameters.
+The model provides a reproducible, parameterisable way to estimate the **technical rendering cost** (excluding marketing, human labour, licensing, etc.) of a 90‑minute feature film generated entirely by AI. All constants are defined with low/medium/high intervals, and the user can adjust film duration, VFX duration, regeneration rate, and other parameters.
+
+**Key assumptions (version 6.0):**  
+- Cinema‑quality video cost: **$0.40 per second** (median)  
+- Regeneration attempts per shot: **25** (range 20–30)  
+- 90‑min film ≈ 1,200 shots (5 seconds each)
 
 ---
 
@@ -31,10 +33,9 @@ costs = compute_cost_ia(scenario='all')
 print(costs)
 ```
 
-Output example:
-
+**Output example (version 6.0):**
 ```
-{'low': 1198.00, 'medium': 2621.00, 'high': 9450.00}
+{'low': 34000.00, 'medium': 56000.00, 'high': 84000.00}
 ```
 
 ---
@@ -45,7 +46,7 @@ Output example:
 
 ```python
 cost = compute_cost_ia(scenario='medium')
-print(f"Median cost: {cost:.2f} USD")
+print(f"Median technical rendering cost: {cost:.2f} USD")
 ```
 
 ### 2. Custom film duration (e.g., 120 minutes)
@@ -64,18 +65,17 @@ for k, v in costs.items():
     print(f"{k.capitalize():6s} : {v:.2f} USD")
 ```
 
-### 4. Sensitivity analysis – vary rejection rate
+### 4. Sensitivity analysis – vary regeneration rate
 
-*Note: To change a constant like `REJECTION_RATE`, you need to create a custom constants dictionary. This example shows how to override constants by creating a modified copy of the intervals.*
+*Note: To change the regeneration rate, you can override the `REGENERATION_RATE` constant.*
 
 ```python
 from cineinfini_cost_model_param import INTERVALS, compute_cost_ia
 
-def compute_with_rejection_rate(rej):
-    # Create a custom intervals dict with a new rejection rate
+def compute_with_regeneration_rate(regen):
+    # Create a custom intervals dict with a new regeneration rate
     custom_intervals = INTERVALS.copy()
-    custom_intervals["REJECTION_RATE"] = (rej, rej, rej)  # low=mid=high=rej
-    # Temporarily replace INTERVALS (for advanced use)
+    custom_intervals["REGENERATION_RATE"] = (regen, regen, regen)  # low=mid=high=regen
     import cineinfini_cost_model_param as cm
     original = cm.INTERVALS
     cm.INTERVALS = custom_intervals
@@ -83,9 +83,9 @@ def compute_with_rejection_rate(rej):
     cm.INTERVALS = original
     return cost
 
-for rej in [0.2, 0.5, 1.0, 2.0]:
-    cost = compute_with_rejection_rate(rej)
-    print(f"Rejection rate {rej}: {cost:.2f} USD")
+for regen in [20, 25, 30]:
+    cost = compute_with_regeneration_rate(regen)
+    print(f"Regeneration rate {regen}: {cost:.2f} USD")
 ```
 
 ### 5. Visualisation (requires matplotlib)
@@ -98,7 +98,7 @@ scenarios = list(costs.keys())
 values = list(costs.values())
 
 plt.bar(scenarios, values, color=['green', 'orange', 'red'])
-plt.ylabel('Production cost (USD)')
+plt.ylabel('Technical rendering cost (USD)')
 plt.title('CineInfini cost estimates (90 min AI film)')
 plt.show()
 ```
@@ -112,7 +112,7 @@ All constants (shot duration, dialogue ratio, AI costs, human costs, etc.) are d
 - **`constants/Constants.md`** – human‑readable tables with references.
 - **`src/cineinfini_cost_model_param.py`** – the `INTERVALS` dictionary.
 
-User‑adjustable parameters (film duration, VFX duration, rejection rate, GPU price, currency) are in `DEFAULT_PARAMS` and can be overridden via `user_params`.
+User‑adjustable parameters (film duration, VFX duration, regeneration rate, currency) are in `DEFAULT_PARAMS` and can be overridden via `user_params`.
 
 ---
 
@@ -133,7 +133,10 @@ This project is licensed under the **MIT License** – see the [LICENSE](../LICE
 
 If you use this code or data in your research, please cite:
 
-> Benbrahim, S.-E. (2026). CineInfini Master Reference – constants, parameters, and code. GitHub. https://github.com/CineInfini/master-reference
+> Benbrahim, S.-E. (2026). CineInfini Master Reference – constants, parameters, and code. GitHub. https://github.com/CineInfini/master-reference/tree/main/cineinfini_cost_model_param
 
-And the associated paper (preprint on arXiv, DOI pending).
+And the associated paper (submitted to ACM AI Letters).
+
+
+
 
