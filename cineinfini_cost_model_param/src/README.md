@@ -4,11 +4,12 @@ This repository contains the parametric cost model for AI‑generated films (mod
 *"A Parametric Cost Model for AI‑Driven Film Production: Realistic Estimates and Sensitivity Analysis"*.
 
 The model estimates the **technical rendering cost** (video, audio, VFX, AI editing) of a 90‑minute feature film generated entirely by AI.  
-All constants are defined with low/medium/high intervals, and the user can adjust film duration, VFX duration, regeneration rate, and currency.
+All constants are defined with low/medium/high intervals, and the user can adjust film duration, VFX duration, regeneration rates for each component, and currency.
 
-**Key assumptions (version 6.0):**  
+**Key assumptions (version 6.2):**  
 - Cinema‑quality video cost: **$0.40 per second** (median)  
-- Regeneration attempts per shot: **25** (range 20–30)  
+- Video regeneration attempts per shot: **25** (range 20–30)  
+- Lower regeneration rates for TTS (0.2), music (0.2), VFX (0.5), editing (0.2)  
 - 90‑min film ≈ 1,200 shots (5 seconds each)  
 
 ---
@@ -90,54 +91,35 @@ Medium : 56000.00 USD
 High   : 84000.00 USD
 ```
 
-### 4. Sensitivity analysis – vary regeneration rate
+### 4. Sensitivity analysis – vary video regeneration rate
 
-The regeneration rate (attempts per shot) strongly influences total cost. To change it, override the `REGENERATION_RATE` constant.
+The regeneration rate (attempts per shot) strongly influences total cost. You can override it directly in `user_params`:
 
 ```python
-from cineinfini_cost_model_param import INTERVALS, compute_cost_ia
-
-def compute_with_regeneration_rate(regen):
-    # Create a custom intervals dict with a new regeneration rate
-    custom_intervals = INTERVALS.copy()
-    custom_intervals["REGENERATION_RATE"] = (regen, regen, regen)  # low=mid=high=regen
-    import cineinfini_cost_model_param as cm
-    original = cm.INTERVALS
-    cm.INTERVALS = custom_intervals
-    cost = compute_cost_ia(scenario='medium')
-    cm.INTERVALS = original
-    return cost
-
 for regen in [20, 25, 30]:
-    cost = compute_with_regeneration_rate(regen)
-    print(f"Regeneration rate {regen}: {cost:.2f} USD")
+    params = {"regen_video": regen}
+    cost = compute_cost_ia(scenario="medium", user_params=params)
+    print(f"Video regeneration rate {regen}: {cost:.2f} USD")
 ```
 
 **Expected output (linear scaling):**
 
 ```
-Regeneration rate 20: 46700.00 USD
-Regeneration rate 25: 56000.00 USD
-Regeneration rate 30: 65300.00 USD
+Video regeneration rate 20: 46700.00 USD
+Video regeneration rate 25: 56000.00 USD
+Video regeneration rate 30: 65300.00 USD
 ```
 
 ### 5. Sensitivity analysis – vary video cost per second
 
 ```python
-from cineinfini_cost_model_param import INTERVALS, compute_cost_ia
-
-def compute_with_video_cost(video_cost):
-    custom_intervals = INTERVALS.copy()
-    custom_intervals["VIDEO_AI_COST_PER_SEC"] = (video_cost, video_cost, video_cost)
-    import cineinfini_cost_model_param as cm
-    original = cm.INTERVALS
-    cm.INTERVALS = custom_intervals
-    cost = compute_cost_ia(scenario='medium')
-    cm.INTERVALS = original
-    return cost
-
 for vc in [0.30, 0.40, 0.50]:
-    cost = compute_with_video_cost(vc)
+    # Temporarily override the constant in INTERVALS (advanced)
+    import cineinfini_cost_model_param as cm
+    original = cm.INTERVALS["VIDEO_AI_COST_PER_SEC"]
+    cm.INTERVALS["VIDEO_AI_COST_PER_SEC"] = (vc, vc, vc)
+    cost = compute_cost_ia(scenario="medium")
+    cm.INTERVALS["VIDEO_AI_COST_PER_SEC"] = original
     print(f"Video cost ${vc}/s: {cost:.2f} USD")
 ```
 
@@ -149,7 +131,15 @@ Video cost $0.40/s: 56000.00 USD
 Video cost $0.50/s: 70000.00 USD
 ```
 
-### 6. Visualisation (requires matplotlib)
+### 6. Adjust regeneration rates for other components
+
+```python
+params = {"regen_tts": 0.5, "regen_music": 0.5, "regen_vfx": 1.0, "regen_editing": 0.5}
+cost = compute_cost_ia(scenario="medium", user_params=params)
+print(f"Cost with higher non‑video regeneration: {cost:.2f} USD")
+```
+
+### 7. Visualisation (requires matplotlib)
 
 ```python
 import matplotlib.pyplot as plt
@@ -175,13 +165,17 @@ All constants (shot duration, dialogue ratio, AI costs, human costs, etc.) are d
 - **`constants/Constants.md`** – human‑readable tables with references.
 - **`src/cineinfini_cost_model_param.py`** – the `INTERVALS` dictionary.
 
-User‑adjustable parameters (film duration, VFX duration, regeneration rate, currency) are in `DEFAULT_PARAMS` and can be overridden via `user_params`.
+User‑adjustable parameters (film duration, VFX duration, regeneration rates, currency) are in `DEFAULT_PARAMS` and can be overridden via `user_params`.
 
 | Variable | Description | Default | Range | Unit |
 |----------|-------------|---------|-------|------|
 | `film_duration_sec` | Film duration | 5400 | 3600–7200 | s |
 | `vfx_duration_sec` | VFX duration | 1200 | 600–2400 | s |
-| `regeneration_rate` | Attempts per shot | 25 | 20–30 | – |
+| `regen_video` | Video regeneration attempts per shot | 25 | 20–30 | – |
+| `regen_tts` | TTS regeneration attempts | 0.2 | 0–1 | – |
+| `regen_music` | Music regeneration attempts | 0.2 | 0–1 | – |
+| `regen_vfx` | VFX regeneration attempts | 0.5 | 0–2 | – |
+| `regen_editing` | Editing regeneration attempts | 0.2 | 0–1 | – |
 | `currency` | Currency | USD | – | – |
 
 ---
@@ -215,4 +209,3 @@ And the associated paper (submitted to ACM AI Letters).
 All numerical values are exposed as parameters. You can reproduce the results in the paper by running the default configuration. To explore alternative scenarios (different video costs, regeneration rates, film lengths), simply modify the corresponding parameters as shown in the examples above.
 
 For a complete sensitivity analysis (Sobol indices), refer to the Jupyter notebook `sensitivity_analysis.ipynb`.
-
