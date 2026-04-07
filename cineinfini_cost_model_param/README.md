@@ -1,3 +1,4 @@
+
 # CineInfini Parametric Cost Model
 
 This repository contains the parametric cost model for AI‑generated films (mode AI), as described in the paper  
@@ -19,19 +20,19 @@ All constants are defined with low/medium/high intervals, and the user can adjus
 | File / Folder | Description |
 |---------------|-------------|
 | [`src/cineinfini_cost_model_param.py`](src/cineinfini_cost_model_param.py) | Main Python script with the cost model |
-| [`constants/Constants.md`](Constants/Constants.md) | All constants, variables, and parameters with intervals and references |
-| [`bibliography/Bibliography.md`](Bibliography/Bibliography.md) | Full list of references (academic, industry, legal) |
-| [`examples/`](examples/) | Example scripts (sensitivity analysis, calibration, etc.) |
-| [`sensitivity_analysis.ipynb`](sensitivity_analysis.ipynb) | Jupyter notebook for interactive sensitivity analysis (optional) |
+| [`Constants/Constants.md`](Constants/Constants.md) | All constants, variables, and parameters with intervals and references |
+| [`Bibliography/Bibliography.md`](Bibliography/Bibliography.md) | Full list of references (academic, industry, legal) |
+| [`Examples/`](Examples/) | Example scripts (sensitivity analysis, calibration, etc.) |
+| [`Notebooks/sensitivity_analysis.ipynb`](Notebooks/sensitivity_analysis.ipynb) | Jupyter notebook for interactive sensitivity analysis |
 | `README.md` | This file |
 
-**Direct links:** [constants](Constants/Constants.md) · [source code](src/cineinfini_cost_model_param.py) · [examples](examples/) · [bibliography](Bibliography/Bibliography.md)
+**Direct links:** [constants](Constants/Constants.md) · [source code](src/cineinfini_cost_model_param.py) · [examples](Examples/) · [bibliography](Bibliography/Bibliography.md) · [notebook](Notebooks/sensitivity_analysis.ipynb)
 
 ---
 
 ## Constants and Parameters (Full Tables)
 
-Full references are available in [`bibliography/Bibliography.md`](bibliography/Bibliography.md).
+Full references are available in [`Bibliography/Bibliography.md`](Bibliography/Bibliography.md).
 
 ### Table 1 – Core constants (medium values)
 
@@ -156,7 +157,4 @@ And the associated paper (submitted to ACM AI Letters).
 
 All numerical values are exposed as parameters. You can reproduce the results in the paper by running the default configuration. To explore alternative scenarios (different video costs, regeneration rates, film lengths), simply modify the corresponding parameters as shown in the examples above.
 
-For a complete sensitivity analysis (Sobol indices), refer to the Jupyter notebook `sensitivity_analysis.ipynb` and the script [`examples/example_sobol_sensitivity.py`](examples/example_sobol_sensitivity.py).
-```
-
-Vous pouvez copier ce contenu dans votre fichier `README.md`. Les liens sont actifs et pointent vers les bons emplacements (supposant que votre dépôt a la structure décrite).
+For a complete sensitivity analysis (Sobol indices), refer to the Jupyter notebook [`Notebooks/sensitivity_analysis.ipynb`](Notebooks/sensitivity_analysis.ipynb) and the script [`Examples/example_sobol_sensitivity.py`](Examples/example_sobol_sensitivity.py).
