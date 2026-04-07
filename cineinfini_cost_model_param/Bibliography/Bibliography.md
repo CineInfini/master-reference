@@ -1,58 +1,49 @@
+# Bibliography
 
-# References
+## References
 
-This file contains all references cited in the CineInfini parametric cost model and associated files.
+[1] Vogel, H. L. *Entertainment Industry Economics*, 10th ed. Cambridge University Press, 2020. [Online]. Available: https://www.cambridge.org/9781108493086
 
-## Books and academic references
+[2] Brooks, T., et al. “Sora 2 System Card.” OpenAI, 2025. [Online]. Available: https://openai.com/index/sora-2-system-card/ (PDF: https://cdn.openai.com/pdf/50d5973c-c4ff-4c2d-986f-c72b5d0ff069/sora_2_system_card.pdf)
 
-[Vogel2020] Vogel, H. L. *Entertainment Industry Economics*, 10th ed. Cambridge University Press, 2020.  
-https://www.cambridge.org/9781107025295
+[3] Kondratyuk, D., et al. “Movie Gen.” Meta AI, 2024. [Online]. Available: https://ai.meta.com/blog/movie-gen-media-foundation-models-generative-ai-video/ (arXiv: https://arxiv.org/abs/2410.13720)
 
-[Brooks2025] Brooks, T., et al. “Sora 2 System Card.” OpenAI Technical Report, 2025.  
-https://openai.com/sl-SI/index/sora-2-system-card/
+[4] Runway Research. “Gen-3 Alpha.” 2024. [Online]. Available: https://runwayml.com/research/introducing-gen-3-alpha
 
-[MovieGen2024] Kondratyuk, D., et al. “Movie Gen: A Cast of Media Foundation Models.” Meta AI Research, arXiv preprint, 2024.  
-https://ai.meta.com/research/publications/movie-gen-a-cast-of-media-foundation-models/
+[5] Kuaishou Technology. “Kling AI.” 2025. [Online]. Available: https://modelslab.com/blog/video-generation/kling-3-veo-3-runway-ai-video-api-comparison-2026
 
-[Kling2025] Kuaishou Technology. “Kling 2.6/O1.” 2025.  
-https://the-decoder.de/kling-ai-videogenerator-2-6-kann-jetzt-stimmen-und-bewegungen-praezise-steuern/
+[6] Filmustage. “How AI agents are rewiring film pre‑production.” 2025. [Online]. Available: https://filmustage.com/blog/how-ai-agents-are-rewiring-film-pre-production/
 
-[Runway2025] Esser, P., et al. “Runway Gen‑4 Turbo.” Runway Research, 2025.  
-https://devplivo.plivo.com/blog/runway-gen-4-turbo-fastest-ai-video-generator
+[7] AdMonsters. “The truth about AI video yield.” 2025. [Online]. Available: https://www.admonsters.com/the-truth-about-ai-video-yield/
 
-[MPA2025] Motion Picture Association. *2024 THEME Report*. MPA, 2025.  
-https://www.motionpictures.org/research-reports/
+[8] ElevenLabs. “Pricing.” 2026. [Online]. Available: https://elevenlabs.io/pricing
 
-[Wan2026] Alibaba Group. “Wan 2.2 Explained: A New Approach to AI Video Generation.” 2026.  
-https://vast.ai/article/wan-2-2-explained-new-approach-ai-video-generation
+[9] TechBang. “Netflix cuts VFX costs by 90% using AI.” 2025. [Online]. Available: https://www.bbc.com/news/articles/c9vr4rymlw9o
 
-[ElevenLabs2026] ElevenLabs. “Pricing and API Documentation.” 2026.  
-https://elevenlabs.io/pricing
+[10] CometAPI. “Suno AI pricing.” 2025. [Online]. Available: https://www.cometapi.com/suno-music-api/
 
-[MuseSteamer2025] MuseSteamer. “AI VFX Cost Reduction Case Study.” 2025.  
-https://yizhan.baidu.com/article/musesteamer
+[11] bigvu.tv. “ElevenLabs Pricing (2026).” 2026. [Online]. Available: https://bigvu.tv/blog/elevenlabs-pricing-2026-plans-credits-commercial-rights-api-costs/
 
-[Lee2026] Lee, D., et al. “Memory‑V2V: Memory‑Augmented Video‑to‑Video Diffusion for Consistent Multi‑Turn Editing.” arXiv, 2026.  
-https://arxiv.org/abs/2601.16296
+[12] Runway Research. “Gen-4 Turbo.” 2024/2025. [Online]. Available: https://runwayml.com/research/introducing-runway-gen-4
 
-[Elmoghany2025] Elmoghany, M., et al. “A Survey on Long‑Video Storytelling Generation: Architectures, Consistency, and Cinematic Quality.” ICCV 2025 LongVid Workshop.  
-https://arxiv.org/abs/2507.07202
+[13] Follows, S. “How many shots are in the average movie?” 2017. [Online]. Available: https://stephenfollows.com/how-many-shots-are-in-the-average-movie/
 
-[Thaler2026] Jones Walker LLP. “With Thaler Closed, Courts Must Now Turn to the Harder Question of AI‑Assisted Authorship.” 2026.  
-https://www.joneswalker.com/en/insights/blogs/ai-law-blog/with-thaler-closed-courts-must-now-turn-to-the-harder-question-of-ai-assisted-au.html
+[14] Benbrahim, S.-E. “CineInfini master reference.” GitHub, 2026. https://github.com/CineInfini/master-reference/tree/main/cineinfini_cost_model_param
 
-## Industry and union standards
+[15] Saltelli, A., et al. *Global Sensitivity Analysis: The Primer*. Wiley, 2008. [Online]. Available: https://onlinelibrary.wiley.com/doi/book/10.1002/9780470725184
 
-[WGA] Writers Guild of America. Standard minimum fees for screenwriting.  
-https://www.wga.org/contracts
+[16] Gartner. “Why half of GenAI projects fail.” 2025. [Online]. Available: https://www.gartner.com/en/articles/genai-project-failure
 
-[DGA] Directors Guild of America. Standard minimum fees for directing.  
-https://www.dga.org/Contracts
+[17] SAGindie. “Theatrical Contract Changes.” 2023. [Online]. Available: https://www.sagindie.org/sagaftra/contract-changes-2023/
 
-[SAGindie2023] SAGindie. “NOTICE: Theatrical Contract Changes (2023).”  
-https://www.sagindie.org/sagaftra/contract-changes-2023/
+[18] Frontiers in Psychology. “Paradox of creativity in generative AI.” 2025. [Online]. Available: https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2025.1628486/full
 
-## Code and data repository
+[19] Spheron. “GPU Cloud Pricing Comparison 2026.” 2026. [Online]. Available: https://www.spheron.network/blog/gpu-cloud-pricing-comparison-2026/
 
-[CineInfini2026] Benbrahim, S.-E. *CineInfini Master Reference – constants, parameters, and code*. GitHub, 2026.  
-https://github.com/CineInfini/master-reference
+[20] baike.baidu.com. “影片长度.” 2026. [Online]. Available: https://baike.baidu.com/item/%E5%BD%B1%E7%89%87%E9%95%BF%E5%BA%A6/1393092
+
+[21] ModelsLab. “Veo 3.1 vs Kling 3.0 vs Sora 2: AI Video API Pricing 2026.” 2026. [Online]. Available: https://modelslab.com/blog/video-generation/kling-3-veo-3-runway-ai-video-api-comparison-2026
+
+[22] CineTrans. “Controllable video transition generation.” arXiv, 2025. [Online]. Available: https://arxiv.org/abs/2508.11484
+
+[23] ShotDirector. “Directorial control in multi‑shot video generation.” ICLR, 2025. [Online]. Available: https://arxiv.org/abs/2512.10286
