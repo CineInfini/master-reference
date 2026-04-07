@@ -30,7 +30,7 @@ All constants are defined with low/medium/high intervals, and the user can adjus
 
 ## Constants and Parameters (Full Tables)
 
-Full references are available in [`bibliography/Bibliography.md`](bibliography/Bibliography.md).
+Full references are available in [`Bibliography/Bibliography.md`](Bibliography/Bibliography.md).
 
 ### Table 1 – Core constants (medium values)
 
