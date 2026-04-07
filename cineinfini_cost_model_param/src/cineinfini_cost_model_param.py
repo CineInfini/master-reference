@@ -8,7 +8,7 @@ License: MIT
 Repository: https://github.com/CineInfini/master-reference/tree/main/cineinfini_cost_model_param
 
 This module provides a parametric cost model for AI‑generated films (mode AI).
-All constants and variables are aligned with the paper version 6.0.
+All constants and variables are aligned with the paper version 6.2.
 """
 
 from typing import Dict, Union
@@ -23,9 +23,9 @@ CONFIG = {
 
 # ----------------------------------------------------------------------
 # 2. Intervals for all constants (low, medium, high)
-#    Values updated for version 6.0:
+#    Values updated for version 6.2:
 #    - VIDEO_AI_COST_PER_SEC: medium = 0.40 USD/s (cinema quality)
-#    - REGENERATION_RATE: replaces REJECTION_RATE, range 20-30, default 25
+#    - REGENERATION_RATE_VIDEO: range 20-30, default 25
 # ----------------------------------------------------------------------
 INTERVALS = {
     # Technical constants
@@ -52,8 +52,8 @@ INTERVALS = {
     "DIRECTOR_FLAT": (500_000, 2_000_000, 10_000_000),       # USD/film [DGA]
     "CREW_DAY": (500, 800, 1500),                            # USD/day [Vogel2020]
 
-    # Performance parameter: regeneration attempts per shot (replaces rejection rate)
-    "REGENERATION_RATE": (20.0, 25.0, 30.0),         # dimensionless [AdMonsters2025]
+    # Performance parameter: video regeneration attempts per shot
+    "REGENERATION_RATE_VIDEO": (20.0, 25.0, 30.0),   # dimensionless [AdMonsters2025]
 }
 
 # ----------------------------------------------------------------------
@@ -63,6 +63,12 @@ DEFAULT_PARAMS = {
     "film_duration_sec": 5400,      # 90 minutes
     "vfx_duration_sec": 1200,       # 20 minutes
     "currency": "USD",              # USD, EUR, GBP
+    # Regeneration rates for each component (defaults from paper)
+    "regen_video": 25.0,            # attempts per shot (range 20-30)
+    "regen_tts": 0.2,               # attempts for TTS (range 0-1)
+    "regen_music": 0.2,             # attempts for music (range 0-1)
+    "regen_vfx": 0.5,               # attempts for VFX (range 0-2)
+    "regen_editing": 0.2,           # attempts for editing (range 0-1)
 }
 
 # ----------------------------------------------------------------------
@@ -92,7 +98,8 @@ def compute_cost_ia(scenario: str = CONFIG["default_scenario"],
         - 'high'  : pessimistic (highest constant values)
         - 'all'   : return a dict with three keys 'low', 'medium', 'high'
     user_params : dict, optional
-        Override default parameters (film_duration_sec, vfx_duration_sec, currency).
+        Override default parameters (film_duration_sec, vfx_duration_sec, currency,
+        and any regeneration rates).
 
     Returns
     -------
@@ -117,27 +124,32 @@ def compute_cost_ia(scenario: str = CONFIG["default_scenario"],
 
     film_duration = params["film_duration_sec"]
     vfx_duration = params["vfx_duration_sec"]
-    # Use regeneration rate (25 default, range 20-30)
-    regen_rate = const["REGENERATION_RATE"]
+    # Use regeneration rates from params (overridable)
+    regen_video = params.get("regen_video", const["REGENERATION_RATE_VIDEO"])
+    regen_tts = params.get("regen_tts", 0.2)
+    regen_music = params.get("regen_music", 0.2)
+    regen_vfx = params.get("regen_vfx", 0.5)
+    regen_editing = params.get("regen_editing", 0.2)
+
     shot_duration = const["SHOT_DURATION_SEC"]
     n_shots = film_duration / shot_duration
 
-    # Video generation cost: includes regeneration multiplier (1 + regen_rate)
-    video_cost = n_shots * shot_duration * const["VIDEO_AI_COST_PER_SEC"] * (1 + regen_rate)
+    # Video generation cost (per shot, with regenerations)
+    video_cost = n_shots * shot_duration * const["VIDEO_AI_COST_PER_SEC"] * (1 + regen_video)
 
-    # Text‑to‑speech (dialogues)
+    # Text‑to‑speech (dialogues) – global, with regenerations
     dialogue_sec = film_duration * const["DIALOGUE_RATIO"]
-    tts_cost = dialogue_sec * const["SPEECH_RATE_CHAR_PER_SEC"] * const["TTS_COST_PER_CHAR"]
+    tts_cost = dialogue_sec * const["SPEECH_RATE_CHAR_PER_SEC"] * const["TTS_COST_PER_CHAR"] * (1 + regen_tts)
 
-    # Music
+    # Music – global, with regenerations
     music_sec = film_duration * const["MUSIC_RATIO"]
-    music_cost = music_sec * const["MUSIC_AI_COST_PER_SEC"]
+    music_cost = music_sec * const["MUSIC_AI_COST_PER_SEC"] * (1 + regen_music)
 
-    # VFX
-    vfx_cost = vfx_duration * const["VFX_AI_COST_PER_SEC"]
+    # VFX – global, with regenerations
+    vfx_cost = vfx_duration * const["VFX_AI_COST_PER_SEC"] * (1 + regen_vfx)
 
-    # Editing
-    editing_cost = film_duration * const["EDITING_AI_COST_PER_SEC"]
+    # Editing – global, with regenerations
+    editing_cost = film_duration * const["EDITING_AI_COST_PER_SEC"] * (1 + regen_editing)
 
     total = video_cost + tts_cost + music_cost + vfx_cost + editing_cost
     return total
@@ -146,7 +158,7 @@ def compute_cost_ia(scenario: str = CONFIG["default_scenario"],
 # 6. Example usage (when script is run directly)
 # ----------------------------------------------------------------------
 if __name__ == "__main__":
-    print("CineInfini Parametric Cost Model (Version 6.0)")
+    print("CineInfini Parametric Cost Model (Version 6.2)")
     print("=============================================\n")
     print("Production cost (excluding marketing) for a 90‑minute AI film:\n")
 
@@ -154,13 +166,14 @@ if __name__ == "__main__":
     for k, v in costs.items():
         print(f"  {k.capitalize():6s} : {v:.2f} {DEFAULT_PARAMS['currency']}")
 
-    print("\nSensitivity analysis (varying regeneration rate, medium scenario):")
-    # Demonstrate effect of regeneration rate (20, 25, 30)
+    print("\nSensitivity analysis (varying video regeneration rate, medium scenario):")
     for regen in [20, 25, 30]:
-        # Override the regeneration rate by creating a custom constants dictionary
-        # (in a real scenario, you would modify INTERVALS temporarily)
-        # Here we just simulate by scaling the medium cost linearly:
-        base_cost = costs["medium"]
-        factor = (1 + regen) / (1 + 25)  # 25 is default medium
-        sim_cost = base_cost * factor
-        print(f"  Regeneration rate {regen} -> {sim_cost:.2f} USD (simulated linear scaling)")
+        custom_params = {"regen_video": regen}
+        cost = compute_cost_ia(scenario="medium", user_params=custom_params)
+        print(f"  Video regeneration rate {regen} -> {cost:.2f} USD")
+
+    print("\nEffect of TTS regeneration rate (medium scenario, video regen=25):")
+    for regen in [0.1, 0.2, 0.5]:
+        custom_params = {"regen_tts": regen}
+        cost = compute_cost_ia(scenario="medium", user_params=custom_params)
+        print(f"  TTS regeneration rate {regen} -> {cost:.2f} USD")
