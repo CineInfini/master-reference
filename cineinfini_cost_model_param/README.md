@@ -1,6 +1,4 @@
-Voici le fichier `README.md` final, avec les références aux fichiers de code et aux bibliographies. Il contient les tableaux, les instructions d’utilisation, et les liens vers les ressources du dépôt. Vous pouvez le copier-coller directement dans votre dépôt GitHub.
 
-```markdown
 # CineInfini Parametric Cost Model
 
 This repository contains the parametric cost model for AI‑generated films (mode AI), as described in the paper  
@@ -38,29 +36,29 @@ Full references are available in [`bibliography/Bibliography.md`](bibliography/B
 
 | Constant | Description | Medium value | Unit | Reference |
 |----------|-------------|--------------|------|-----------|
-| $K_{\text{shot\_dur}}$ | Shot duration | 5 | s | [13] |
-| $K_{\text{dial\_ratio}}$ | Dialogue proportion | 0.4 | – | [1] |
-| $K_{\text{speech\_rate}}$ | Speech rate | 10 | char/s | [8] |
-| $K_{\text{music\_ratio}}$ | Music proportion | 0.7 | – | [9] |
-| $K_{\text{vid\_cost}}$ | AI video cost | 0.40 | USD/s | [21] |
-| $K_{\text{tts\_cost}}$ | TTS cost per char | 0.0003 | USD/char | [8,11] |
-| $K_{\text{music\_cost}}$ | AI music cost | 0.03 | USD/s | [10] |
-| $K_{\text{vfx\_ai\_cost}}$ | AI VFX cost | 0.01 | USD/s | [9] |
-| $K_{\text{edit\_ai\_cost}}$ | AI editing cost | 0.005 | USD/s | [12] |
-| $K_{\text{gpu\_price}}$ | GPU rental (H100 spot) | 3.0 | USD/h | [19] |
+| `K_shot_dur` | Shot duration | 5 | s | [13] |
+| `K_dial_ratio` | Dialogue proportion | 0.4 | – | [1] |
+| `K_speech_rate` | Speech rate | 10 | char/s | [8] |
+| `K_music_ratio` | Music proportion | 0.7 | – | [9] |
+| `K_vid_cost` | AI video cost | 0.40 | USD/s | [21] |
+| `K_tts_cost` | TTS cost per char | 0.0003 | USD/char | [8,11] |
+| `K_music_cost` | AI music cost | 0.03 | USD/s | [10] |
+| `K_vfx_ai_cost` | AI VFX cost | 0.01 | USD/s | [9] |
+| `K_edit_ai_cost` | AI editing cost | 0.005 | USD/s | [12] |
+| `K_gpu_price` | GPU rental (H100 spot) | 3.0 | USD/h | [19] |
 
 ### Table 2 – User‑adjustable variables
 
 | Variable | Description | Default | Range | Unit | References |
 |----------|-------------|---------|-------|------|-------------|
-| $V_{\text{duration}}$ | Film duration | 5400 | 3600–7200 | s | [20] |
-| $V_{\text{vfx\_dur}}$ | VFX duration | 1200 | 600–2400 | s | Industry estimate |
-| $V_{\text{video\_regen}}$ | Video regeneration attempts per shot | 25 | 20–30 | – | [7] |
-| $V_{\text{tts\_regen}}$ | TTS regeneration attempts | 0.2 | 0–1 | – | [8,11] |
-| $V_{\text{music\_regen}}$ | Music regeneration attempts | 0.2 | 0–1 | – | [10] |
-| $V_{\text{vfx\_regen}}$ | VFX regeneration attempts | 0.5 | 0–2 | – | [9] |
-| $V_{\text{editing\_regen}}$ | Editing regeneration attempts | 0.2 | 0–1 | – | [12] |
-| $V_{\text{currency}}$ | Currency | USD | – | – | User preference |
+| `V_duration` | Film duration | 5400 | 3600–7200 | s | [20] |
+| `V_vfx_dur` | VFX duration | 1200 | 600–2400 | s | Industry estimate |
+| `V_video_regen` | Video regeneration attempts per shot | 25 | 20–30 | – | [7] |
+| `V_tts_regen` | TTS regeneration attempts | 0.2 | 0–1 | – | [8,11] |
+| `V_music_regen` | Music regeneration attempts | 0.2 | 0–1 | – | [10] |
+| `V_vfx_regen` | VFX regeneration attempts | 0.5 | 0–2 | – | [9] |
+| `V_editing_regen` | Editing regeneration attempts | 0.2 | 0–1 | – | [12] |
+| `V_currency` | Currency | USD | – | – | User preference |
 
 These regeneration rates are derived from reported high success rates of AI‑assisted audio, music, and post‑production tools, which typically require significantly fewer iterations than video generation [8,11,12].
 
@@ -74,7 +72,7 @@ from src.cineinfini_cost_model_param import compute_cost_ia
 # Get low, medium, high costs for a standard 90‑minute film
 costs = compute_cost_ia(scenario='all')
 print(costs)
-```
+````
 
 **Expected output (default parameters):**
 
@@ -131,8 +129,8 @@ plt.show()
 
 ## Dependencies
 
-- **Python 3.8+** (no external libraries required for basic computation)
-- Optional: `pandas`, `matplotlib` for advanced analysis and plotting.
+* **Python 3.8+** (no external libraries required for basic computation)
+* Optional: `pandas`, `matplotlib` for advanced analysis and plotting.
 
 ---
 
@@ -146,8 +144,8 @@ This project is licensed under the **MIT License** – see the [LICENSE](LICENSE
 
 If you use this code or data in your research, please cite:
 
-> Benbrahim, S.-E. (2026). CineInfini Master Reference – constants, parameters, and code. GitHub.  
-> https://github.com/CineInfini/master-reference/tree/main/cineinfini_cost_model_param
+> Benbrahim, S.-E. (2026). CineInfini Master Reference – constants, parameters, and code. GitHub.
+> [https://github.com/CineInfini/master-reference/tree/main/cineinfini_cost_model_param](https://github.com/CineInfini/master-reference/tree/main/cineinfini_cost_model_param)
 
 And the associated paper (submitted to ACM AI Letters).
 
@@ -158,6 +156,5 @@ And the associated paper (submitted to ACM AI Letters).
 All numerical values are exposed as parameters. You can reproduce the results in the paper by running the default configuration. To explore alternative scenarios (different video costs, regeneration rates, film lengths), simply modify the corresponding parameters as shown in the examples above.
 
 For a complete sensitivity analysis (Sobol indices), refer to the Jupyter notebook `sensitivity_analysis.ipynb` and the script `examples/example_sobol_sensitivity.py`.
-```
 
-Ce fichier est prêt. Il contient les tableaux, les liens vers les fichiers de code (`src/`, `examples/`, `bibliography/`), et les instructions d’utilisation. Il ne divulgue pas le contenu académique de l’article. Vous pouvez le copier dans votre dépôt.
+
