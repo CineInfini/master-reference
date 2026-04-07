@@ -8,7 +8,7 @@ License: MIT
 Repository: https://github.com/CineInfini/master-reference/tree/main/cineinfini_cost_model_param
 
 This module provides a parametric cost model for AI‑generated films (mode AI).
-All constants and variables are aligned with the paper version 6.2.
+All constants and variables are aligned with the paper version 7.12.
 """
 
 from typing import Dict, Union
@@ -23,37 +23,37 @@ CONFIG = {
 
 # ----------------------------------------------------------------------
 # 2. Intervals for all constants (low, medium, high)
-#    Values updated for version 6.2:
+#    Values updated for version 7.12:
 #    - VIDEO_AI_COST_PER_SEC: medium = 0.40 USD/s (cinema quality)
 #    - REGENERATION_RATE_VIDEO: range 20-30, default 25
 # ----------------------------------------------------------------------
 INTERVALS = {
     # Technical constants
-    "SHOT_DURATION_SEC": (4.0, 5.0, 8.0),           # [Vogel2020]
-    "DIALOGUE_RATIO": (0.3, 0.4, 0.5),              # [Vogel2020]
-    "SPEECH_RATE_CHAR_PER_SEC": (8, 10, 12),        # [ElevenLabs2026]
-    "MUSIC_RATIO": (0.6, 0.7, 0.8),                 # [MuseSteamer2025]
+    "SHOT_DURATION_SEC": (4.0, 5.0, 8.0),           # [13]
+    "DIALOGUE_RATIO": (0.3, 0.4, 0.5),              # [1]
+    "SPEECH_RATE_CHAR_PER_SEC": (8, 10, 12),        # [8]
+    "MUSIC_RATIO": (0.6, 0.7, 0.8),                 # [9]
 
     # AI costs (updated: median video cost = 0.40 USD/s)
-    "VIDEO_AI_COST_PER_SEC": (0.30, 0.40, 0.50),    # USD/s [ModelsLab2026]
-    "TTS_COST_PER_CHAR": (0.0001, 0.0003, 0.0005),  # USD/char [ElevenLabs2026]
-    "MUSIC_AI_COST_PER_SEC": (0.01, 0.03, 0.05),    # USD/s [CometAPI2025]
-    "VFX_AI_COST_PER_SEC": (0.01, 0.05, 0.10),      # USD/s [TechBang2025]
-    "EDITING_AI_COST_PER_SEC": (0.001, 0.005, 0.01),# USD/s [Runway2024]
-    "GPU_SEC_PER_VIDEO_SEC": (60, 120, 600),        # GPU‑s/s [MovieGen2024]
-    "GPU_PRICE_PER_HOUR": (1.5, 3.0, 5.0),          # USD/h [MovieGen2024]
+    "VIDEO_AI_COST_PER_SEC": (0.30, 0.40, 0.50),    # USD/s [21]
+    "TTS_COST_PER_CHAR": (0.0001, 0.0003, 0.0005),  # USD/char [8,11]
+    "MUSIC_AI_COST_PER_SEC": (0.01, 0.03, 0.05),    # USD/s [10]
+    "VFX_AI_COST_PER_SEC": (0.01, 0.05, 0.10),      # USD/s [9]
+    "EDITING_AI_COST_PER_SEC": (0.001, 0.005, 0.01),# USD/s [12]
+    "GPU_SEC_PER_VIDEO_SEC": (60, 120, 600),        # GPU‑s/s (not used directly)
+    "GPU_PRICE_PER_HOUR": (1.5, 3.0, 5.0),          # USD/h [19]
     "TRADITIONAL_VFX_COST_PER_SEC": (10000, 50000, 100000),  # USD/s
 
-    # Human costs (traditional)
-    "ALIST_ACTOR_DAY": (500_000, 1_000_000, 2_000_000),      # USD/day [Vogel2020]
-    "EXTRA_NON_UNION_DAY": (300, 500, 1000),                 # USD/day [SAGindie2023]
-    "EXTRA_UNION_DAY": (2500, 2500, 2500),                   # USD/day [SAGindie2023]
-    "SCREENWRITER_FLAT": (100_000, 250_000, 500_000),        # USD/script [WGA]
-    "DIRECTOR_FLAT": (500_000, 2_000_000, 10_000_000),       # USD/film [DGA]
-    "CREW_DAY": (500, 800, 1500),                            # USD/day [Vogel2020]
+    # Human costs (traditional) – kept for completeness
+    "ALIST_ACTOR_DAY": (500_000, 1_000_000, 2_000_000),
+    "EXTRA_NON_UNION_DAY": (300, 500, 1000),
+    "EXTRA_UNION_DAY": (2500, 2500, 2500),
+    "SCREENWRITER_FLAT": (100_000, 250_000, 500_000),
+    "DIRECTOR_FLAT": (500_000, 2_000_000, 10_000_000),
+    "CREW_DAY": (500, 800, 1500),
 
     # Performance parameter: video regeneration attempts per shot
-    "REGENERATION_RATE_VIDEO": (20.0, 25.0, 30.0),   # dimensionless [AdMonsters2025]
+    "REGENERATION_RATE_VIDEO": (20.0, 25.0, 30.0),   # dimensionless [7]
 }
 
 # ----------------------------------------------------------------------
@@ -158,8 +158,8 @@ def compute_cost_ia(scenario: str = CONFIG["default_scenario"],
 # 6. Example usage (when script is run directly)
 # ----------------------------------------------------------------------
 if __name__ == "__main__":
-    print("CineInfini Parametric Cost Model (Version 6.2)")
-    print("=============================================\n")
+    print("CineInfini Parametric Cost Model (Version 7.12)")
+    print("===============================================\n")
     print("Production cost (excluding marketing) for a 90‑minute AI film:\n")
 
     costs = compute_cost_ia(scenario="all")
@@ -171,9 +171,3 @@ if __name__ == "__main__":
         custom_params = {"regen_video": regen}
         cost = compute_cost_ia(scenario="medium", user_params=custom_params)
         print(f"  Video regeneration rate {regen} -> {cost:.2f} USD")
-
-    print("\nEffect of TTS regeneration rate (medium scenario, video regen=25):")
-    for regen in [0.1, 0.2, 0.5]:
-        custom_params = {"regen_tts": regen}
-        cost = compute_cost_ia(scenario="medium", user_params=custom_params)
-        print(f"  TTS regeneration rate {regen} -> {cost:.2f} USD")
